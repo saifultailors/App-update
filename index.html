@@ -89,6 +89,14 @@ body.detail .search{display:none}
 .shots{display:flex;gap:12px;overflow-x:auto;margin:26px -16px 0;padding:0 16px 6px;scrollbar-width:none}
 .shots::-webkit-scrollbar{display:none}
 .shot{flex:0 0 200px;height:356px;border-radius:16px;padding:20px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;font-weight:700;font-size:20px;line-height:1.3}
+.ico{position:relative}
+.ico img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ico.has-img span{display:none}
+.shot-img{flex:0 0 auto;height:356px;width:auto;max-width:78vw;border-radius:16px;border:1px solid var(--line);background:#fff;cursor:zoom-in;object-fit:cover}
+.lb{position:fixed;inset:0;background:rgba(8,20,17,.92);z-index:30;display:none;align-items:center;justify-content:center;padding:16px}
+.lb.on{display:flex}
+.lb img{max-width:100%;max-height:100%;border-radius:12px}
+.lb button{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;background:#ffffff22;color:#fff;font-size:26px}
 .about{margin-top:28px}
 .about h2{font-size:19px;margin-bottom:8px}
 .about p{color:var(--ink-soft);font-size:16px;max-width:62ch}
@@ -125,13 +133,20 @@ body.detail .search{display:none}
    এখানে আপনার সফটওয়্যারগুলো যোগ/পরিবর্তন করুন।
    file: এখানে অ্যাপের ডাউনলোড লিংক দিন (যেমন "files/hisab-khata.apk"
          অথবা Google Drive / সরাসরি লিংক)। ফাঁকা থাকলে ডাউনলোড হবে না।
+   icon:  অ্যাপের আইকন ছবি (বর্গাকার PNG/JPG, ৫১২×৫১২ হলে সবচেয়ে ভালো)।
+          যেমন "images/hisab-khata/icon.png"। ফাঁকা বা ভুল হলে রঙিন অক্ষর দেখাবে।
+   shots: স্ক্রিনশটের তালিকা (ফোনের স্ক্রিনশট যেমন আছে তেমনই দিন)।
+          যেমন ["images/hisab-khata/1.png","images/hisab-khata/2.png"]
+          ফাঁকা থাকলে নমুনা কার্ড দেখাবে। ট্যাপ করলে ছবি বড় হয়ে খুলবে।
+   ছবির ফাইলগুলো এই HTML ফাইলের পাশে "images" নামের ফোল্ডারে রাখুন।
    ============================================================ */
 const APPS = [
-  {id:"Sharifpur", name:"শরীফপুর সেবা", dev:"আপনার কোম্পানি", color:"#0f766e",
-   sections:["suggested","business","top"], icon: "https://raw.githubusercontent.com/saifultailors/App-update/refs/heads/main/Screenshot_20261007_182533.jpg", rating:4.6, reviews:"50 জন", size:"29.9 MB", downloads:"100 জন+", age:"3+",
-   tags:["সার্ভিস","সেবা"],
+  {id:"hisab-khata", name:"হিসাব খাতা", dev:"আপনার কোম্পানি", letter:"হ", color:"#0f766e",
+   icon:"", shots:[],
+   sections:["suggested","business","top"], rating:4.6, reviews:"১২ হাজার", size:"18 MB", downloads:"৫০ হাজার+", age:"3+",
+   tags:["ব্যবসা","হিসাব"],
    about:"দৈনন্দিন আয়-ব্যয়, বাকি ও জমার হিসাব এক জায়গায় রাখুন। ইন্টারনেট ছাড়াও চলে।",
-   file:"https://drive.google.com/drive/folders/1MXm0-_4g_1Vg2GuBp2NnuOsoMZ6Vvcmo"},
+   file:""},
   {id:"dokan-bill", name:"দোকান বিল ও ইনভয়েস", dev:"আপনার কোম্পানি", letter:"ব", color:"#b4232a",
    sections:["business","top"], rating:4.4, reviews:"৮ হাজার", size:"26 MB", downloads:"২০ হাজার+", age:"3+",
    tags:["বিলিং","ইনভয়েস"],
@@ -169,7 +184,11 @@ const $ = s => document.querySelector(s);
 const app = $("#app");
 
 function icon(a, cls=""){
-  return `<div class="ico ${cls}" style="background:linear-gradient(145deg,${a.color},${shade(a.color)})"><span>${a.letter}</span></div>`;
+  const grad = `linear-gradient(145deg,${a.color},${shade(a.color)})`;
+  if(a.icon){
+    return `<div class="ico has-img ${cls}" style="background:#fff"><img src="${a.icon}" alt="" loading="lazy" onerror="var p=this.parentNode;p.classList.remove('has-img');p.style.background='${grad}';this.remove()"><span>${a.letter}</span></div>`;
+  }
+  return `<div class="ico ${cls}" style="background:${grad}"><span>${a.letter}</span></div>`;
 }
 function shade(hex){
   const n=parseInt(hex.slice(1),16);
@@ -206,8 +225,10 @@ function detail(id){
   if(!a){ location.hash=""; return; }
   document.body.classList.add("detail");
   window.scrollTo(0,0);
-  const shots = [`${a.name} এক নজরে`,"সহজ ও দ্রুত","আপনার তথ্য নিরাপদ"].map((t,i)=>
-    `<div class="shot" style="background:linear-gradient(${150+i*25}deg,${a.color},${shade(shade(a.color))})">${t}</div>`).join("");
+  const shots = (a.shots && a.shots.length)
+    ? a.shots.map((s,i)=>`<img class="shot-img" src="${s}" alt="${a.name} স্ক্রিনশট ${bn(i+1)}" loading="lazy" tabindex="0" data-shot="${s}">`).join("")
+    : [`${a.name} এক নজরে`,"সহজ ও দ্রুত","আপনার তথ্য নিরাপদ"].map((t,i)=>
+      `<div class="shot" style="background:linear-gradient(${150+i*25}deg,${a.color},${shade(shade(a.color))})">${t}</div>`).join("");
   app.innerHTML = `
     <div class="d-top">${icon(a)}<div><h1>${a.name}</h1><div class="dev">${a.dev}</div></div></div>
     <div class="facts">
@@ -248,8 +269,21 @@ function route(){
   const h=location.hash.replace("#","");
   if(h.startsWith("app/")) detail(h.slice(4)); else home($("#q").value);
 }
+const lb=document.createElement("div");
+lb.className="lb";
+lb.innerHTML='<button aria-label="বন্ধ করুন">×</button><img alt="">';
+document.body.appendChild(lb);
+const closeLb=()=>lb.classList.remove("on");
+lb.addEventListener("click",closeLb);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeLb(); });
+function openShot(src){ lb.querySelector("img").src=src; lb.classList.add("on"); }
+
 app.addEventListener("click",e=>{
+  const s=e.target.closest("[data-shot]"); if(s){ openShot(s.dataset.shot); return; }
   const b=e.target.closest("[data-id]"); if(b) location.hash="app/"+b.dataset.id;
+});
+app.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){ const s=e.target.closest("[data-shot]"); if(s) openShot(s.dataset.shot); }
 });
 $("#back").addEventListener("click",()=>{ history.length>1 ? history.back() : (location.hash=""); });
 $("#q").addEventListener("input",()=>{ if(location.hash) location.hash=""; else home($("#q").value); });

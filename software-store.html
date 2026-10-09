@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>সফটওয়্যার স্টোর</title>
+<style>
+:root{
+  --ink:#10302a;
+  --ink-soft:#4b625c;
+  --paper:#f4f7f5;
+  --card:#ffffff;
+  --line:#dbe5e0;
+  --action:#0b57d0;
+  --action-dark:#0842a0;
+  --star:#e8a200;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Hind Siliguri','Noto Sans Bengali','Kalpurush','Nikosh',system-ui,sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.5;
+  min-height:100vh;
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--action);outline-offset:2px;border-radius:6px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
+
+/* top bar */
+.bar{position:sticky;top:0;z-index:5;background:var(--paper);padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.bar-in{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.brand{font-weight:700;font-size:20px;letter-spacing:-.01em;flex:1}
+.back{width:40px;height:40px;border-radius:50%;display:none;align-items:center;justify-content:center}
+.back:hover{background:#e3ece8}
+.back svg{width:24px;height:24px}
+.search{max-width:720px;margin:10px auto 0;display:block}
+.search input{
+  width:100%;padding:11px 16px;border-radius:999px;border:1px solid var(--line);
+  background:#fff;font:inherit;color:var(--ink)
+}
+body.detail .back{display:flex}
+body.detail .search{display:none}
+
+/* sections */
+.sec{margin-top:26px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sec-head h2{font-size:19px;font-weight:700}
+.rail{display:flex;gap:16px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.tile{flex:0 0 96px;text-align:left;scroll-snap-align:start}
+.tile .ico{width:96px;height:96px;border-radius:22px}
+.tile .nm{margin-top:8px;font-size:14px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .sz{font-size:13px;color:var(--ink-soft)}
+
+.rowlist{display:flex;flex-direction:column}
+.row{display:flex;gap:14px;align-items:center;padding:12px 0;text-align:left;width:100%;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .pos{width:18px;color:var(--ink-soft);font-size:15px;text-align:center}
+.row .ico{width:56px;height:56px;border-radius:14px;flex:none}
+.row .t{font-weight:600;font-size:16px}
+.row .m{font-size:13px;color:var(--ink-soft)}
+
+/* icons */
+.ico{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;overflow:hidden}
+.ico span{font-size:1.9em;line-height:1}
+.tile .ico span{font-size:44px}
+.row .ico span{font-size:26px}
+
+/* detail */
+.d-top{display:flex;gap:18px;align-items:flex-start;margin-top:22px}
+.d-top .ico{width:88px;height:88px;border-radius:22px;flex:none}
+.d-top .ico span{font-size:42px}
+.d-top h1{font-size:26px;line-height:1.25;font-weight:700}
+.d-top .dev{color:var(--action);font-weight:600;margin-top:2px}
+.facts{display:flex;margin:22px 0;padding:6px 0;border-block:1px solid var(--line)}
+.fact{flex:1;text-align:center;padding:8px 4px;border-right:1px solid var(--line)}
+.fact:last-child{border-right:0}
+.fact b{display:block;font-size:16px}
+.fact small{font-size:12.5px;color:var(--ink-soft)}
+.install{
+  width:100%;padding:13px;border-radius:999px;background:var(--action);color:#fff;
+  font-weight:600;font-size:17px;position:relative;overflow:hidden;transition:background .15s
+}
+.install:hover{background:var(--action-dark)}
+.install .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--action-dark)}
+.install .lbl{position:relative}
+.install[disabled]{cursor:default}
+.note{font-size:13px;color:var(--ink-soft);margin-top:8px;text-align:center}
+.shots{display:flex;gap:12px;overflow-x:auto;margin:26px -16px 0;padding:0 16px 6px;scrollbar-width:none}
+.shots::-webkit-scrollbar{display:none}
+.shot{flex:0 0 200px;height:356px;border-radius:16px;padding:20px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;font-weight:700;font-size:20px;line-height:1.3}
+.about{margin-top:28px}
+.about h2{font-size:19px;margin-bottom:8px}
+.about p{color:var(--ink-soft);font-size:16px;max-width:62ch}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tag{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 14px;font-size:14px}
+
+.empty{padding:40px 0;color:var(--ink-soft);text-align:center}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;max-width:88vw;
+  opacity:0;pointer-events:none;transition:.25s;font-size:15px;z-index:20
+}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button class="back" id="back" aria-label="পেছনে যান">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <div class="brand" id="brand">সফটওয়্যার স্টোর</div>
+  </div>
+  <div class="search"><input id="q" type="search" placeholder="সফটওয়্যার খুঁজুন" aria-label="সফটওয়্যার খুঁজুন"></div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============================================================
+   এখানে আপনার সফটওয়্যারগুলো যোগ/পরিবর্তন করুন।
+   file: এখানে অ্যাপের ডাউনলোড লিংক দিন (যেমন "files/hisab-khata.apk"
+         অথবা Google Drive / সরাসরি লিংক)। ফাঁকা থাকলে ডাউনলোড হবে না।
+   ============================================================ */
+const APPS = [
+  {id:"hisab-khata", name:"হিসাব খাতা", dev:"আপনার কোম্পানি", letter:"হ", color:"#0f766e",
+   sections:["suggested","business","top"], rating:4.6, reviews:"১২ হাজার", size:"18 MB", downloads:"৫০ হাজার+", age:"3+",
+   tags:["ব্যবসা","হিসাব"],
+   about:"দৈনন্দিন আয়-ব্যয়, বাকি ও জমার হিসাব এক জায়গায় রাখুন। ইন্টারনেট ছাড়াও চলে।",
+   file:""},
+  {id:"dokan-bill", name:"দোকান বিল ও ইনভয়েস", dev:"আপনার কোম্পানি", letter:"ব", color:"#b4232a",
+   sections:["business","top"], rating:4.4, reviews:"৮ হাজার", size:"26 MB", downloads:"২০ হাজার+", age:"3+",
+   tags:["বিলিং","ইনভয়েস"],
+   about:"কয়েক সেকেন্ডে বিল তৈরি করুন, প্রিন্ট করুন বা কাস্টমারকে শেয়ার করুন।",
+   file:""},
+  {id:"order-book", name:"অর্ডার বুক", dev:"আপনার কোম্পানি", letter:"অ", color:"#5b3fa6",
+   sections:["suggested","business"], rating:4.5, reviews:"৫ হাজার", size:"21 MB", downloads:"১০ হাজার+", age:"3+",
+   tags:["অর্ডার","কাস্টমার"],
+   about:"কাস্টমারের অর্ডার, মাপ ও ডেলিভারির তারিখ সাজিয়ে রাখুন। সময়মতো রিমাইন্ডার পান।",
+   file:""},
+  {id:"stock-pro", name:"স্টক ম্যানেজার", dev:"আপনার কোম্পানি", letter:"স", color:"#c2570c",
+   sections:["business","top"], rating:4.3, reviews:"৩ হাজার", size:"31 MB", downloads:"১০ হাজার+", age:"3+",
+   tags:["স্টক","ইনভেন্টরি"],
+   about:"পণ্যের মজুদ, কেনা ও বিক্রির হিসাব রাখুন। স্টক কমে গেলে সতর্কবার্তা পান।",
+   file:""},
+  {id:"post-maker", name:"পোস্ট মেকার", dev:"আপনার কোম্পানি", letter:"প", color:"#0b57d0",
+   sections:["suggested","top"], rating:4.2, reviews:"২ হাজার", size:"39 MB", downloads:"৫ হাজার+", age:"3+",
+   tags:["ডিজাইন","মার্কেটিং"],
+   about:"রেডি টেমপ্লেট দিয়ে ফেসবুক ও ইনস্টাগ্রামের পোস্ট বানান, নিজের লোগো বসান।",
+   file:""},
+  {id:"salary-sheet", name:"বেতন ও হাজিরা", dev:"আপনার কোম্পানি", letter:"হা", color:"#1d6b3a",
+   sections:["business"], rating:4.4, reviews:"১ হাজার", size:"17 MB", downloads:"৫ হাজার+", age:"3+",
+   tags:["কর্মী","বেতন"],
+   about:"কর্মীদের হাজিরা ও মাসিক বেতনের হিসাব সহজে রাখুন।",
+   file:""}
+];
+const SECTIONS = [
+  {key:"suggested", title:"আপনার জন্য সাজেস্টেড", type:"rail"},
+  {key:"business",  title:"বিজনেস টুলস", type:"rail"},
+  {key:"top",       title:"টপ ফ্রি সফটওয়্যার", type:"list"}
+];
+
+const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+const $ = s => document.querySelector(s);
+const app = $("#app");
+
+function icon(a, cls=""){
+  return `<div class="ico ${cls}" style="background:linear-gradient(145deg,${a.color},${shade(a.color)})"><span>${a.letter}</span></div>`;
+}
+function shade(hex){
+  const n=parseInt(hex.slice(1),16);
+  const r=Math.max(0,(n>>16)-40),g=Math.max(0,((n>>8)&255)-40),b=Math.max(0,(n&255)-40);
+  return `rgb(${r},${g},${b})`;
+}
+function sizeBn(s){ return s.replace(/\d+/g, bn); }
+
+/* ---------- হোম ---------- */
+function home(filter=""){
+  document.body.classList.remove("detail");
+  const f = filter.trim().toLowerCase();
+  if(f){
+    const res = APPS.filter(a => (a.name+a.tags.join(" ")).toLowerCase().includes(f));
+    app.innerHTML = `<div class="sec"><div class="sec-head"><h2>সার্চ রেজাল্ট</h2></div>` +
+      (res.length ? `<div class="rowlist">${res.map(row).join("")}</div>` : `<p class="empty">কিছু পাওয়া যায়নি। অন্য নাম লিখে খুঁজুন।</p>`) + `</div>`;
+    return;
+  }
+  app.innerHTML = SECTIONS.map(s=>{
+    const list = APPS.filter(a=>a.sections.includes(s.key));
+    if(!list.length) return "";
+    const body = s.type==="rail"
+      ? `<div class="rail">${list.map(tile).join("")}</div>`
+      : `<div class="rowlist">${list.map((a,i)=>row(a,i+1)).join("")}</div>`;
+    return `<section class="sec"><div class="sec-head"><h2>${s.title}</h2></div>${body}</section>`;
+  }).join("");
+}
+const tile = a => `<button class="tile" data-id="${a.id}">${icon(a)}<div class="nm">${a.name}</div><div class="sz">${sizeBn(a.size)}</div></button>`;
+const row = (a,i) => `<button class="row" data-id="${a.id}">${i?`<span class="pos">${bn(i)}</span>`:""}${icon(a)}<div><div class="t">${a.name}</div><div class="m">${a.tags[0]} &nbsp;★ ${bn(a.rating)} &nbsp;${sizeBn(a.size)}</div></div></button>`;
+
+/* ---------- ডিটেইল ---------- */
+function detail(id){
+  const a = APPS.find(x=>x.id===id);
+  if(!a){ location.hash=""; return; }
+  document.body.classList.add("detail");
+  window.scrollTo(0,0);
+  const shots = [`${a.name} এক নজরে`,"সহজ ও দ্রুত","আপনার তথ্য নিরাপদ"].map((t,i)=>
+    `<div class="shot" style="background:linear-gradient(${150+i*25}deg,${a.color},${shade(shade(a.color))})">${t}</div>`).join("");
+  app.innerHTML = `
+    <div class="d-top">${icon(a)}<div><h1>${a.name}</h1><div class="dev">${a.dev}</div></div></div>
+    <div class="facts">
+      <div class="fact"><b>${bn(a.rating)} ★</b><small>${a.reviews} রিভিউ</small></div>
+      <div class="fact"><b>${a.age}</b><small>বয়স সীমা</small></div>
+      <div class="fact"><b>${sizeBn(a.size)}</b><small>সাইজ</small></div>
+      <div class="fact"><b>${a.downloads}</b><small>ডাউনলোড</small></div>
+    </div>
+    <button class="install" id="install"><span class="fill"></span><span class="lbl">ডাউনলোড করুন</span></button>
+    <p class="note">ডাউনলোড শেষে ফাইলটি খুলে ইনস্টল করুন।</p>
+    <div class="shots">${shots}</div>
+    <section class="about"><h2>এই সফটওয়্যার সম্পর্কে</h2><p>${a.about}</p>
+      <div class="tags">${a.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div></section>`;
+  $("#install").addEventListener("click", ()=>startDownload(a));
+}
+
+function startDownload(a){
+  if(!a.file){ toast("এই সফটওয়্যারের ডাউনলোড লিংক এখনও যুক্ত করা হয়নি।"); return; }
+  const btn=$("#install"), fill=btn.querySelector(".fill"), lbl=btn.querySelector(".lbl");
+  btn.disabled=true; let p=0;
+  const t=setInterval(()=>{
+    p+=Math.random()*18+7; if(p>100)p=100;
+    fill.style.width=p+"%"; lbl.textContent=`ডাউনলোড হচ্ছে… ${bn(Math.round(p))}%`;
+    if(p>=100){
+      clearInterval(t);
+      const l=document.createElement("a");
+      l.href=a.file; l.download=a.name; l.rel="noopener"; document.body.appendChild(l); l.click(); l.remove();
+      lbl.textContent="ডাউনলোড সম্পন্ন"; toast("ডাউনলোড শুরু হয়েছে।");
+      setTimeout(()=>{btn.disabled=false;fill.style.width="0";lbl.textContent="আবার ডাউনলোড করুন"},2500);
+    }
+  },160);
+}
+
+let tt; function toast(m){const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("on"),3200)}
+
+/* ---------- রাউটিং ---------- */
+function route(){
+  const h=location.hash.replace("#","");
+  if(h.startsWith("app/")) detail(h.slice(4)); else home($("#q").value);
+}
+app.addEventListener("click",e=>{
+  const b=e.target.closest("[data-id]"); if(b) location.hash="app/"+b.dataset.id;
+});
+$("#back").addEventListener("click",()=>{ history.length>1 ? history.back() : (location.hash=""); });
+$("#q").addEventListener("input",()=>{ if(location.hash) location.hash=""; else home($("#q").value); });
+window.addEventListener("hashchange",route);
+route();
+</script>
+</body>
+</html>
